@@ -8,15 +8,12 @@ spec:
   goTemplateOptions: ["missingkey=error"]
 
   generators:
-    - matrix:
-        generators:
-          # 1) Env list
-          - list:
-              elements:
-                - env: develop
-                  namespace: vault-develop
-                - env: staging
-                  namespace: vault-staging
+    - list:
+        elements:
+          - env: develop
+            namespace: vault-develop
+          - env: staging
+            namespace: vault-staging
 
   template:
     metadata:
