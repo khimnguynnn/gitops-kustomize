@@ -6,38 +6,25 @@ metadata:
 spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
-
   generators:
-    - matrix:
-        generators:
-          # Cluster list (1 cluster)
-          - list:
-              elements:
-                - cluster: dev
-                  url: https://kubernetes.default.svc
-
-          # Env list (2 env)
-          - list:
-              elements:
-                - env: develop
-                - env: staging
+    - list:
+        elements:
+          - url: https://kubernetes.default.svc
 
   template:
     metadata:
-      name: bootstrap-{{.cluster}}-{{.env}}
+      name: bootstrap
     spec:
       project: default
 
       sources:
-        # AppProjects thường shared, không cần env
         - repoURL: https://github.com/khimnguynnn/gitops-kustomize.git
           targetRevision: main
           path: argocd/appprojects
 
-        # Bootstrap theo env
         - repoURL: https://github.com/khimnguynnn/gitops-kustomize.git
           targetRevision: main
-          path: argocd/bootstrap/{{.env}}
+          path: argocd/bootstrap
 
       destination:
         server: "{{.url}}"
