@@ -18,14 +18,6 @@ spec:
                 - env: staging
                   namespace: vault-staging
 
-          # 2) Cluster (same cluster)
-          - clusters:
-              selector:
-                matchLabels:
-                  argocd.argoproj.io/secret-type: cluster
-              values:
-                server: "{{.server}}"
-
   template:
     metadata:
       name: "vault-{{.env}}"
@@ -43,7 +35,7 @@ spec:
         path: "platform/vault/overlays/{{.env}}"
 
       destination:
-        server: "{{.server}}"
+        server: https://kubernetes.default.svc
         namespace: "{{.namespace}}"
 
       syncPolicy:
