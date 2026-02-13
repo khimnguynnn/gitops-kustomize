@@ -1,0 +1,35 @@
+vault:
+  injector:
+    enabled: false
+  server:
+    enabled: true
+    image:
+      repository: "hashicorp/vault"
+      tag: "1.19.0"
+      pullPolicy: IfNotPresent
+    resources:
+      requests: {}
+    dataStorage:
+      enabled: true
+      size: 5Gi
+      mountPath: "/vault/data"
+      storageClass: "sata"
+      accessMode: ReadWriteOnce
+    standalone:
+      enabled: true
+    ingress:
+      enabled: false
+      ingressClassName: nginx
+      annotations:
+        nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+      pathType: Prefix
+      activeService: true
+      hosts:
+        - host: vault-staging.khiemnd.dev
+          paths:
+            - /
+      tls: []
+    serviceAccount:
+      create: true
+  ui:
+    enabled: true

@@ -1,0 +1,57 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: vault
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+
+  generators:
+    - matrix:
+        generators:
+          # 1) Env list
+          - list:
+              elements:
+                - env: develop
+                  namespace: vault-develop
+                - env: staging
+                  namespace: vault-staging
+
+          # 2) Cluster (same cluster)
+          - clusters:
+              selector:
+                matchLabels:
+                  argocd.argoproj.io/secret-type: cluster
+              values:
+                server: "{{.server}}"
+
+  template:
+    metadata:
+      name: "vault-{{.env}}"
+      labels:
+        app.kubernetes.io/name: vault
+        app.kubernetes.io/part-of: platform
+        env: "{{.env}}"
+
+    spec:
+      project: platform
+
+      source:
+        repoURL: <YOUR_GIT_REPO_URL>
+        targetRevision: HEAD
+        path: "platform/vault/overlays/{{.env}}"
+
+      destination:
+        server: "{{.server}}"
+        namespace: "{{.namespace}}"
+
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - PrunePropagationPolicy=foreground
+          - PruneLast=true
+          - ApplyOutOfSyncOnly=true
